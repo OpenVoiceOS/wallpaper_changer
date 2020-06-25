@@ -1,2 +1,6 @@
 requests
 pygobject
+bs4
+feedparser
+requests-cache
+dbus-python

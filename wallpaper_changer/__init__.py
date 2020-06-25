@@ -3,28 +3,21 @@ import re
 import requests
 import sys
 import subprocess
-from os.path import join, expanduser, isdir
-from os import makedirs
+from os.path import join, expanduser
 
 
-def set_wallpaper(file_loc, desktop_env = None):
+def set_wallpaper(file_loc, desktop_env=None):
     if file_loc.startswith("http"):
-        i = requests.get(file_loc)
-        file_loc = join(expanduser("~"), "Pictures", "wallpaper.jpg")
-        if i.status_code == requests.codes.ok:
-            if not isdir(join(expanduser("~"), "Pictures")):
-                makedirs(join(expanduser("~"), "Pictures"))
-
+        r = requests.get(file_loc)
+        file_loc = join(expanduser("~"), "wallpaper.jpg")
+        if r.status_code == requests.codes.ok:
             with open(file_loc, 'wb') as f:
-                f.write(i.content)
+                f.write(r.content)
         else:
             print("ERROR downloading wallpaper")
             return False
 
-    # Note: There are two common Linux desktop environments where
-    # I have not been able to set the desktop background from
-    # command line: KDE, Enlightenment
-    desktop_env = desktop_env or get_desktop_environment()
+    desktop_env = desktop_env.lower() or get_desktop_environment()
     try:
         if desktop_env in ["gnome", "unity", "cinnamon"]:
             uri = "'file://%s'" % file_loc
@@ -66,12 +59,12 @@ def set_wallpaper(file_loc, desktop_env = None):
             # From http://ubuntuforums.org/archive/index.php/t-803417.html
             args = 'dcop kdesktop KBackgroundIface setWallpaper 0 "%s" 6' % file_loc
             subprocess.Popen(args, shell=True)
-        elif desktop_env == "xfce4" or desktop_env == "xfce":
+        elif desktop_env in ["xfce4", "xfce"]:
             # From http://www.commandlinefu.com/commands/view/2055/change-wallpaper-for-xfce4-4.6.0
             # Not working in xubuntu, seems that prop name changed
-            # try to detect correct prop name to use
+            # try to auto detect correct prop name to use
             props = subprocess.check_output(["xfconf-query", "-lc",
-                                             "xfce4-desktop"])\
+                                             "xfce4-desktop"]) \
                 .decode("utf-8").split("\n")
             props = [p for p in props if "last-image" in p or "image-path"
                      in p]
@@ -79,8 +72,7 @@ def set_wallpaper(file_loc, desktop_env = None):
                 args = ["xfconf-query", "-c", "xfce4-desktop", "-p", p, "-s",
                         file_loc]
                 subprocess.Popen(args)
-            args = ["xfdesktop", "--reload"]
-            subprocess.Popen(args)
+            subprocess.Popen(["xfdesktop", "--reload"])
         elif desktop_env in ["fluxbox", "jwm", "openbox", "afterstep"]:
             # http://fluxbox-wiki.org/index.php/Howto_set_the_background
             # used fbsetbg on jwm too since I am too lazy to edit the XML configuration
@@ -91,9 +83,9 @@ def set_wallpaper(file_loc, desktop_env = None):
                 args = ["fbsetbg", file_loc]
                 subprocess.Popen(args)
             except:
-                sys.stderr.write(
+                print(
                     "ERROR: Failed to set wallpaper with fbsetbg!\n")
-                sys.stderr.write(
+                print(
                     "Please make sre that You have fbsetbg installed.\n")
         elif desktop_env == "icewm":
             # command found at http://urukrama.wordpress.com/2007/12/05/desktop-backgrounds-in-window-managers/
@@ -111,7 +103,11 @@ def set_wallpaper(file_loc, desktop_env = None):
             args = "wmsetbg -s -u %s" % file_loc
             subprocess.Popen(args, shell=True)
         elif desktop_env == "kde":
-            import dbus
+            try:
+                import dbus
+            except ImportError:
+                print("pip install dbus-python")
+                raise
             bus = dbus.SessionBus()
             remote_object = bus.get_object("org.kde.plasmashell",
                                            "/PlasmaShell")
@@ -125,7 +121,7 @@ def set_wallpaper(file_loc, desktop_env = None):
         return True
     except:
         print(
-            "ERROR: Failed to set wallpaper. There might be a bug.")
+            "ERROR: Failed to set wallpaper.")
         return False
 
 
@@ -193,4 +189,3 @@ def get_desktop_environment():
         elif is_running("ksmserver"):
             return "kde"
     return "unknown"
-
