@@ -66,7 +66,7 @@ def set_wallpaper(file_loc, desktop_env = None):
             # From http://ubuntuforums.org/archive/index.php/t-803417.html
             args = 'dcop kdesktop KBackgroundIface setWallpaper 0 "%s" 6' % file_loc
             subprocess.Popen(args, shell=True)
-        elif desktop_env == "xfce4":
+        elif desktop_env == "xfce4" or desktop_env == "xfce":
             # From http://www.commandlinefu.com/commands/view/2055/change-wallpaper-for-xfce4-4.6.0
             # Not working in xubuntu, seems that prop name changed
             # try to detect correct prop name to use
@@ -193,3 +193,4 @@ def get_desktop_environment():
         elif is_running("ksmserver"):
             return "kde"
     return "unknown"
+
