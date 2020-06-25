@@ -193,6 +193,3 @@ def get_desktop_environment():
         elif is_running("ksmserver"):
             return "kde"
     return "unknown"
-
-
-print(os.environ.get("XDG_CURRENT_DESKTOP"))
