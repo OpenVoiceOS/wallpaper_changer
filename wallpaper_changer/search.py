@@ -1,21 +1,22 @@
 import bs4
 import feedparser
-import random
+import requests
 from requests_cache import CachedSession
-from datetime import timedelta
+from datetime import timedelta, datetime
 
 _expire_after = timedelta(hours=1)
 _session = CachedSession(backend='memory', expire_after=_expire_after)
 
 
 def latest_reddit(sub="wallpapers"):
-    feed = "https://www.reddit.com/r/{sub}/.rss".format(sub=sub)
+    feed = "https://www.reddit.com/r/{sub}/.rss"\
+        .format(sub=sub.replace("/r/", ""))
     entries = feedparser.parse(feed)["entries"]
     wallpapers = []
     for e in entries:
         data = {
-            "author": e["author"],
-            "title": e["title"],
+            "author": e.get("author", sub),
+            "title": e.get("title", sub),
             "imgLink": "",
 
         }
@@ -56,7 +57,8 @@ def latest_wpcraft(cat=None, n_pages=1):
             soup = bs4.BeautifulSoup(html, 'html.parser')
             if not n:
                 n = soup.find("li", {"class": "pager__item "
-                                              "pager__item_last-page"}).find("a")
+                                              "pager__item_last-page"}).find(
+                    "a")
 
                 n = int(n["href"].split("/")[-1].replace("page", ""))
             if n < i:
@@ -85,7 +87,7 @@ def latest_wpcraft(cat=None, n_pages=1):
                     .format(image_id=im_id, res=data["res"])
                 wallpapers.append(data)
         except:
-            pass # TODO debug random failures
+            pass  # TODO debug random failures
     return wallpapers
 
 
@@ -95,13 +97,18 @@ def random_unsplash(cat=None, size='1920x1080'):
     if cat:
         url += cat
         tags = [cat]
-    return {"imgLink": url, "tags": tags}
+    # notice usage of requests, not cache session
+    r = requests.get(url)
+    return {"imgLink": r.url, "tags": tags}
 
 
-def random_reddit(sub="wallpapers"):
-    return random.choice(latest_reddit(sub))
-
-
-def random_wpcraft(cat=None):
-    return random.choice(latest_wpcraft(cat, 2))
+def latest_unsplash(cat=None, size='1920x1080', n=5):
+    images = []
+    if n < 1:
+        n = 1
+    for i in range(n):
+        image = random_unsplash(cat, size)
+        if image not in images:
+            images.append(image)
+    return images
 

@@ -17,7 +17,8 @@ def set_wallpaper(file_loc, desktop_env=None):
             print("ERROR downloading wallpaper")
             return False
 
-    desktop_env = desktop_env.lower() or get_desktop_environment()
+    desktop_env = desktop_env or get_desktop_environment()
+    desktop_env = desktop_env.lower()
     try:
         if desktop_env in ["gnome", "unity", "cinnamon"]:
             uri = "'file://%s'" % file_loc
