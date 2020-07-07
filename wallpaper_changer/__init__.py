@@ -126,6 +126,16 @@ def set_wallpaper(file_loc, desktop_env=None):
         return False
 
 
+def desktop_session_from_env():
+    env_desktop_session = os.environ.get("DESKTOP_SESSION")
+    env_current_desktop = os.environ.get("XDG_CURRENT_DESKTOP")
+    # Ignore default since it contains no info
+    if env_desktop_session == 'default':
+        env_desktop_session = ''
+
+    return env_desktop_session or env_current_desktop
+
+
 def get_desktop_environment():
     # From http://stackoverflow.com/questions/2035657/what-is-my-current-desktop-environment
     # and http://ubuntuforums.org/showthread.php?t=652320
@@ -150,8 +160,8 @@ def get_desktop_environment():
                     return True
             return False
 
-        desktop_session = os.environ.get("DESKTOP_SESSION") or \
-                          os.environ.get("XDG_CURRENT_DESKTOP")
+        desktop_session = desktop_session_from_env()
+
         if desktop_session is not None:
             # easier to match if we doesn't have  to deal with caracter cases
             desktop_session = desktop_session.lower()
