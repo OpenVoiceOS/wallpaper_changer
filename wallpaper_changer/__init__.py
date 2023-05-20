@@ -156,7 +156,7 @@ def get_desktop_environment():
                 s = subprocess.Popen(["tasklist", "/v"],
                                      stdout=subprocess.PIPE)
             for x in s.stdout:
-                if re.search(process, x):
+                if re.search(process, x.decode("utf-8")):
                     return True
             return False
 
