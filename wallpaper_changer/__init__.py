@@ -184,8 +184,7 @@ def get_desktop_environment():
                 return "kde"
             elif desktop_session.startswith("razor"):  # e.g. razorkwin
                 return "razor-qt"
-            elif desktop_session.startswith(
-                    "wmaker"):  # e.g. wmaker-common
+            elif desktop_session.startswith("wmaker"):  # e.g. wmaker-common
                 return "windowmaker"
 
         if os.environ.get('KDE_FULL_SESSION') == 'true':
