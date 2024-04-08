@@ -7,6 +7,17 @@ from os.path import join, expanduser
 
 
 def set_wallpaper(file_loc, desktop_env=None):
+    """
+    Set the wallpaper for the current desktop environment.
+    
+    Args:
+        file_loc (str): Path to the image file or URL of the wallpaper.
+        desktop_env (str): Name of the desktop environment (e.g., 'gnome', 'mate', 'xfce4').
+                           If not specified, it will attempt to auto-detect the current environment.
+
+    Returns:
+        bool: True if the wallpaper was successfully set, False otherwise.
+    """
     if file_loc.startswith("http"):
         r = requests.get(file_loc)
         file_loc = join(expanduser("~"), "wallpaper.jpg")
@@ -127,6 +138,12 @@ def set_wallpaper(file_loc, desktop_env=None):
 
 
 def desktop_session_from_env():
+    """
+    Get the current desktop session from environment variables.
+    
+    Returns:
+        str: Name of the desktop session, or an empty string if not found.
+    """
     env_desktop_session = os.environ.get("DESKTOP_SESSION")
     env_current_desktop = os.environ.get("XDG_CURRENT_DESKTOP")
     # Ignore default since it contains no info
@@ -137,6 +154,12 @@ def desktop_session_from_env():
 
 
 def get_desktop_environment():
+    """
+    Detect and return the current desktop environment.
+    
+    Returns:
+        str: Name of the detected desktop environment. (e.g., "gnome", "kde", "xfce4", "lxde", "mac", "windows", "unknown")
+    """
     # From http://stackoverflow.com/questions/2035657/what-is-my-current-desktop-environment
     # and http://ubuntuforums.org/showthread.php?t=652320
     # and http://ubuntuforums.org/showthread.php?t=652320
