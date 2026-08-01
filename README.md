@@ -1,12 +1,10 @@
 ## Wallpaper Changer
 
-This Python package, `wallpaper_changer`, allows you to easily change your desktop wallpaper programmatically across various Linux desktop environments. 
-
-It supports popular environments like GNOME, Unity, Cinnamon, MATE, XFCE, KDE, LXDE, Fluxbox, Openbox, and more.
+`wallpaper_changer` is a Python package that sets the desktop wallpaper on Linux. It supports the desktop environments listed below.
 
 ### Installation
 
-You can install `wallpaper_changer` via pip:
+Install `wallpaper_changer` with pip:
 
 ```bash
 pip install wallpaper_changer
@@ -14,7 +12,7 @@ pip install wallpaper_changer
 
 ### Usage
 
-Here's a basic example of how you can use `wallpaper_changer` to set your wallpaper:
+Call `set_wallpaper` with a local file path or a URL:
 
 ```python
 import wallpaper_changer
@@ -25,6 +23,8 @@ wallpaper_changer.set_wallpaper('/path/to/your/image.jpg')
 # Set wallpaper from a URL
 wallpaper_changer.set_wallpaper('https://example.com/your/image.jpg')
 ```
+
+If you do not pass `desktop_env`, the package detects the current desktop environment from the session environment variables.
 
 ### Supported Desktop Environments
 
@@ -43,14 +43,16 @@ wallpaper_changer.set_wallpaper('https://example.com/your/image.jpg')
 
 ### Notes
 
-- Make sure to install any required dependencies for your desktop environment, such as `pygobject` for GNOME-based environments or `dbus-python` for KDE.
-- Some functionalities might require specific tools or libraries to be installed on your system.
+Some desktop environments need extra dependencies. GNOME-based environments need `pygobject`. KDE needs `dbus-python`. Install the dependency for your desktop environment before you call `set_wallpaper`.
 
 ### Compatibility
 
-This package is designed for use on Linux systems and may not work on Windows or macOS due to differences in desktop management APIs. Contributions welcome!
+This package targets Linux. It does not work on Windows or macOS, because those systems use different desktop management APIs.
+
+### Related Projects
+
+- [OpenVoiceOS/ovos-PHAL-plugin-wallpaper-manager](https://github.com/OpenVoiceOS/ovos-PHAL-plugin-wallpaper-manager), a PHAL plugin for OpenVoiceOS devices. It coordinates wallpaper providers and calls `wallpaper_changer.set_wallpaper` to apply the desktop wallpaper.
 
 ### Issues and Contributions
 
-If you encounter any issues or have suggestions for improvements, please feel free to open an issue or submit a pull request
-
+If you find an issue or have a suggestion, open an issue or submit a pull request.
